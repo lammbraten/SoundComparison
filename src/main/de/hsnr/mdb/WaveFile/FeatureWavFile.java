@@ -12,8 +12,9 @@ import de.hsnr.mdb.FFT.FFT;
 public class FeatureWavFile  {
 
 	private WavFile wf;
-	double[] hammingWindow;	
-	double[] f_k;
+	float[] hammingWindow;	
+	float[] f_k;
+	private LinkedList<Frame> frames;
 		
 	private FeatureWavFile(WavFile wf){
 		this.wf =  wf;
@@ -27,14 +28,14 @@ public class FeatureWavFile  {
 	}
 	
 	private void calcHammingWindow(int N){
-		hammingWindow = new double[N];
+		hammingWindow = new float[N];
 		
 		for(int i = 0; i < N; i++)
-			hammingWindow[i] = 0.54 - 0.46 * Math.cos((2*Math.PI*i)/(N-1));
+			hammingWindow[i] = (float) (0.54f - 0.46f * Math.cos((2*Math.PI*i)/(N-1)));
 	}
 	
 	private void calcf_k(int fs, int N) {
-		f_k = new double[N];
+		f_k = new float[N];
 		
 		for(int k = 0; k < N; k++)
 			f_k[k] = k*(fs/N);
@@ -47,7 +48,7 @@ public class FeatureWavFile  {
 		double[] sampleBuffer = new double[length]; 
 		wf.readFrames(sampleBuffer, length);
 		
-		LinkedList<Frame> frames = new LinkedList<Frame>();
+		frames = new LinkedList<Frame>();
 		
 		calcHammingWindow(N);
 		calcf_k(N, fs);
@@ -58,6 +59,15 @@ public class FeatureWavFile  {
 		}
 		
 	}
+	
+	public float[] getLoudnes(){
+		float[] loudness = new float[frames.size()];
+		
+		for(int i = 0; i < frames.size(); i++)
+			loudness[i] = frames.get(i).loudness;
+		
+		return loudness;
+	}
 
 
 	public WavFile getWavFile() {
@@ -65,24 +75,24 @@ public class FeatureWavFile  {
 	}
 	
 	class Frame{
-		double[] frameSamples;
+		float[] frameSamples;
 
-		double[] energy;
+		float[] energy;
 		int start;
 		int N;
 		
-		double loudness;
-		double ZC; //Zero-Crossing-Rate
-		double bandwith;
-		double brightness;
+		float loudness;
+		float ZC; //Zero-Crossing-Rate
+		float bandwith;
+		float brightness;
 		
 		Frame(double[] sampleBuffer, int start, int N){
 			this.start = start;
 			this.N = N;
-			this.frameSamples = new double[N];
+			this.frameSamples = new float[N];
 			
 			for(int i = 0; i < N; i++)
-				frameSamples[i] = sampleBuffer[start + i];
+				frameSamples[i] = (float) sampleBuffer[start + i];
 			
 			calcEnergy();
 			
@@ -94,8 +104,8 @@ public class FeatureWavFile  {
 			
 		}
 
-		private double calcLoudness() {
-			double x = 0.0;
+		private float calcLoudness() {
+			float x = 0.0f;
 			
 			for(int i = 0; i < N; i++)
 				x += (frameSamples[i] * frameSamples[i]);
@@ -104,7 +114,7 @@ public class FeatureWavFile  {
 		}
 		
 		//Couldn't be replaced with std-compare-method
-		private int sgn(double x_i){
+		private int sgn(float x_i){
 			if(x_i > 0)
 				return 1;
 			if(x_i < 0)
@@ -113,8 +123,8 @@ public class FeatureWavFile  {
 					
 		}		
 		
-		private double calZeroCrossings() {
-			double x = 0.0;
+		private float calZeroCrossings() {
+			float x = 0.0f;
 			
 			for(int i = 1; i < N; i++)
 				x += Math.abs(sgn(frameSamples[i] - sgn(frameSamples[i-1])));
@@ -124,7 +134,7 @@ public class FeatureWavFile  {
 
 		private void calcEnergy(){
 			Complex []xNew = new Complex[N];
-			energy = new double[N];
+			energy = new float[N];
 			
 			for(int i = 0; i < N; i++)
 				xNew[i] = new Complex((frameSamples[i] * hammingWindow[i]),0);
@@ -132,15 +142,15 @@ public class FeatureWavFile  {
 			Complex []X = FFT.fft(xNew);			
 			
 			for(int i = 0; i < N; i++)
-				energy[i] = 10*Math.log10(Math.sqrt((X[i].re()*X[i].re())+
+				energy[i] = (float) (10*Math.log10(Math.sqrt((X[i].re()*X[i].re())+
 								(X[i].im()*X[i].im())
-						));
+						)));
 			
 		}
 		
-		private double calcBrightness(){
-			double count = 0.0;
-			double energyGes = 0.0;
+		private float calcBrightness(){
+			float count = 0.0f;
+			float energyGes = 0.0f;
 
 			for(int k = 0; k < N/2; k++){
 				count += f_k[k] * energy[k];
@@ -151,9 +161,9 @@ public class FeatureWavFile  {
 			return count/energyGes;	
 		}
 		
-		private double calcBandwith() {
-			double count = 0.0;
-			double energyGes = 0.0;
+		private float calcBandwith() {
+			float count = 0.0f;
+			float energyGes = 0.0f;
 			
 			for(int k = 0; k < N/2; k++){
 				count += ((f_k[k] - brightness)*(f_k[k] - brightness)) * energy[k];

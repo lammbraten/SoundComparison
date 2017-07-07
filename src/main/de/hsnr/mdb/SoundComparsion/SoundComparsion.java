@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jfree.ui.RefineryUtilities;
+
 import de.hsnr.mdb.WaveFile.FeatureWavFile;
 import de.hsnr.mdb.WaveFile.WavFileException;
 
@@ -16,16 +18,16 @@ public class SoundComparsion {
 		
 		for(FeatureWavFile fwf : wavFiles){
 			fwf.getWavFile().display();
-
+			ScatterPlotWindow spw = new ScatterPlotWindow("Test", fwf.getLoudnes());
+			spw.pack();
+			RefineryUtilities.centerFrameOnScreen(spw);
+			spw.setVisible(true);
 		}
-		
-		
-		
+
 		for(FeatureWavFile fwf : wavFiles)
 			fwf.getWavFile().close();
 
 	}
-
 
 
 

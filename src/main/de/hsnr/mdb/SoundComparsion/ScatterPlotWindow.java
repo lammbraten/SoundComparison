@@ -1,75 +1,59 @@
 package de.hsnr.mdb.SoundComparsion;
 
-import java.awt.RenderingHints;
+import java.awt.Panel;
+
+import javax.swing.BoxLayout;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.FastScatterPlot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.ui.ApplicationFrame;
 
 public class ScatterPlotWindow extends ApplicationFrame {
 
 	private static final long serialVersionUID = -2729746392204471906L;
-	private DefaultCategoryDataset  data;
-	//private float[][] data;	
-	
-	private float[] rawData;
+	private DefaultCategoryDataset loudness;
+	private DefaultCategoryDataset zeroCrossings;
+	private DefaultCategoryDataset brightness;
+	private DefaultCategoryDataset bandwidth;
 
-
-
-	public ScatterPlotWindow(String title, float[] rawData) {
+	public ScatterPlotWindow(String title, float[] loudness, float[] zeroCrossings, float[] brightness, float[] bandwidth) {
 		super(title);
-		this.rawData = rawData;
-		
+		this.loudness = populateData(loudness, "loudness");
+		this.zeroCrossings = populateData(zeroCrossings, "zeroCrossings");
+		this.brightness = populateData(brightness, "brightness");
+		this.bandwidth = populateData(bandwidth, "bandwidth");
 
-		
-		final NumberAxis domainAxis = new NumberAxis("time");
-		domainAxis.setAutoRangeIncludesZero(false);
-		final NumberAxis rangeAxis = new NumberAxis("amplitude");
-		rangeAxis.setAutoRangeIncludesZero(false);
-		
-		populateData();		
-	/*	final FastScatterPlot plot = new FastScatterPlot(this.data, domainAxis, rangeAxis);
-		final JFreeChart chart = new JFreeChart("Fast Scatter Plot", plot);
-		chart.getRenderingHints().put
-			(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-*/
-		JFreeChart chart = ChartFactory.createLineChart(title, "time", "amplitude", data, PlotOrientation.VERTICAL, true,true,false);
+		JFreeChart chartLoudness = ChartFactory.createLineChart(title, "time", "amplitude", this.loudness, PlotOrientation.VERTICAL, true,true,false);
+		JFreeChart chartZeroCrossings = ChartFactory.createLineChart(title, "time", "amplitude", this.zeroCrossings, PlotOrientation.VERTICAL, true,true,false);
+		JFreeChart chartBrightness = ChartFactory.createLineChart(title, "time", "amplitude", this.brightness, PlotOrientation.VERTICAL, true,true,false);
+		JFreeChart chartBandwidth = ChartFactory.createLineChart(title, "time", "amplitude", this.bandwidth, PlotOrientation.VERTICAL, true,true,false);
 
-	
-		final ChartPanel panel = new ChartPanel(chart, true);
+		final ChartPanel chartPanelLoudness = new ChartPanel(chartLoudness, true);
+		final ChartPanel chartPanelZeroCrossings = new ChartPanel(chartZeroCrossings, true);
+		final ChartPanel chartPanelBrightness = new ChartPanel(chartBrightness, true);
+		final ChartPanel chartPanelBandwidth = new ChartPanel(chartBandwidth, true);
+
+		Panel panel = new Panel();	
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		
-		panel.setMinimumDrawHeight(10);
-		panel.setMaximumDrawHeight(2000);
-		panel.setMinimumDrawWidth(20);
-		panel.setMaximumDrawWidth(2000);
+		panel.add(chartPanelLoudness);
+		panel.add(chartPanelZeroCrossings);
+		panel.add(chartPanelBrightness);
+		panel.add(chartPanelBandwidth);
 		
 		setContentPane(panel);
 	}	
 	
 	
-	private void populateData() {
-		data = new DefaultCategoryDataset();
-		//data = new float[2][rawData.length];
-		
-		/*for (int i = 0; i < this.rawData.length; i++) {
-		    final float x = (float) i;
-		    this.data[0][i] = x;
-		    this.data[1][i] = rawData[i];
-		}*/
-		
-		for (int i = 0; i < this.rawData.length; i++) {
-		    final float x = (float) i;
+	private DefaultCategoryDataset populateData(float[] rawData, String name) {
+		DefaultCategoryDataset data = new DefaultCategoryDataset();
 
-		    data.addValue(rawData[i], "schools" , ""+x);
-		}
+		for (int i = 0; i < rawData.length; i++) 
+			data.addValue(rawData[i], name , i+"");
+		
+		return data;
 	}
-
-
 }

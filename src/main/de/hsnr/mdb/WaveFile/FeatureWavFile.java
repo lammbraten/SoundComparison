@@ -153,9 +153,13 @@ public class FeatureWavFile {
 
 		private float calcZeroCrossings() {
 			float x = 0.0f;
+			float sgn_x1, sgn_x2;
 
-			for (int i = 1; i < N; i++)
-				x += Math.abs(sgn(frameSamples[i] - sgn(frameSamples[i - 1])));
+			for (int i = 1; i < N; i++){
+				sgn_x1 = sgn(frameSamples[i] );
+				sgn_x2 = sgn(frameSamples[i-1]);
+				x += Math.abs(sgn_x1 -sgn_x2);
+			}
 
 			return x / (2 * N);
 		}
@@ -170,7 +174,8 @@ public class FeatureWavFile {
 			Complex[] X = FFT.fft(xNew);
 
 			for (int i = 0; i < N; i++)
-				energy[i] = (float) (10 * Math.log10(Math.sqrt((X[i].re() * X[i].re()) + (X[i].im() * X[i].im()))));
+				energy[i] = (float) (10 * Math.log10(Math.sqrt((X[i].re() * X[i].re()) 
+						+ (X[i].im() * X[i].im()))));
 
 		}
 

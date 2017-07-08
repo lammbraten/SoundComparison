@@ -26,10 +26,10 @@ public class ScatterPlotWindow extends ApplicationFrame {
 		this.brightness = populateData(brightness, "brightness");
 		this.bandwidth = populateData(bandwidth, "bandwidth");
 
-		JFreeChart chartLoudness = ChartFactory.createLineChart(title, "time", "amplitude", this.loudness, PlotOrientation.VERTICAL, true,true,false);
-		JFreeChart chartZeroCrossings = ChartFactory.createLineChart(title, "time", "amplitude", this.zeroCrossings, PlotOrientation.VERTICAL, true,true,false);
-		JFreeChart chartBrightness = ChartFactory.createLineChart(title, "time", "amplitude", this.brightness, PlotOrientation.VERTICAL, true,true,false);
-		JFreeChart chartBandwidth = ChartFactory.createLineChart(title, "time", "amplitude", this.bandwidth, PlotOrientation.VERTICAL, true,true,false);
+		JFreeChart chartLoudness = ChartFactory.createLineChart("loudness", "time", "amplitude", this.loudness, PlotOrientation.VERTICAL, true,true,false);
+		JFreeChart chartZeroCrossings = ChartFactory.createLineChart("Zero Crossings", "time", "amplitude", this.zeroCrossings, PlotOrientation.VERTICAL, true,true,false);
+		JFreeChart chartBrightness = ChartFactory.createLineChart("Brightness", "time", "amplitude", this.brightness, PlotOrientation.VERTICAL, true,true,false);
+		JFreeChart chartBandwidth = ChartFactory.createLineChart("Bandwidth", "time", "amplitude", this.bandwidth, PlotOrientation.VERTICAL, true,true,false);
 
 		final ChartPanel chartPanelLoudness = new ChartPanel(chartLoudness, true);
 		final ChartPanel chartPanelZeroCrossings = new ChartPanel(chartZeroCrossings, true);

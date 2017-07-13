@@ -173,7 +173,7 @@ public class FeatureWavFile {
 
 			Complex[] X = FFT.fft(xNew);
 
-			for (int i = 0; i < N; i++)
+			for (int i = 0; i < N/2; i++)
 				energy[i] = (float) (10 * Math.log10(Math.sqrt((X[i].re() * X[i].re()) 
 						+ (X[i].im() * X[i].im()))));
 
